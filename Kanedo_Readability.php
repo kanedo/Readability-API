@@ -143,13 +143,45 @@ class Kanedo_Readability {
 	}
 	
 	public function getBookmarks(OAuthToken $aToken = NULL){
-	var_dump($aToken);
 		if($aToken == NULL && $this->access_token == NULL){
 			throw new Kanedo_Readability_Exception('access token required');
 		}
 		$token = ($aToken == NULL)?$this->access_token:$aToken;
 		$url = $this->api_base."bookmarks";
 		var_dump($this->makeAPIRequest($url, NULL, $token));
+	}
+	
+	/**
+	 * retrieves every favorite bookmark between an optional given time frame
+	 * @param $start timestamp time since favorited
+	 * @param $end timestamp time until favorited
+	 * @param $aToken OAuthToken access token
+	 * @return array List of Bookmark objects
+	 **/
+	public function getFavorites($start=NULL, $end=NULL, OAuthToken $aToken = NULL){
+		if($aToken == NULL && $this->access_token == NULL){
+			throw new Kanedo_Readability_Exception('access token required');
+		}
+		$token = ($aToken == NULL)?$this->access_token:$aToken;
+		$url = $this->api_base."bookmarks";
+		
+		$fend= date("Y-m-d", $end);
+		$params = array(
+					'favorite' => 1,
+					);
+		if($start != NULL){
+			$params['favorited_since'] = date("Y-m-d", $start);
+		}
+		
+		if($end != NULL){
+			$params['favorited_until'] = date("Y-m-d", $end);
+		}
+		$results = $this->makeAPIRequest($url, $params, $token);
+		$json = json_decode($results);
+		if($json == NULL){
+			throw new Kanedo_Readability_Exception("bad json");
+		}
+		return $json->bookmarks;
 	}
 }
 ?>

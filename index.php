@@ -8,4 +8,4 @@ $api = new Kanedo_Readability("Kanedo", "cFbkAVP22g2uLpV74cbZCXmjCyyD3Lhb");
 //$result = $api->request_token($_REQUEST['oauth_verifier'], $_REQUEST['oauth_token'], $_REQUEST['oauth_callback_confirmed']);
 
 //var_dump($api->access_token($result));
-$api->getBookmarks($token);
+var_dump($api->getFavorites(NULL, NULL, $token));

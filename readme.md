@@ -10,7 +10,7 @@ You need an API Key from Readability. You can Request one at their [contact page
 ###cURL
 In order to make HTTP-Request this Lib uses the cURL PHP Extension. Other wrapper are planned.
 
-#Usage
+##Usage
 Initiate the object with your token and secret:
 
 	$api = new Kanedo_Readability("consumer_token", "consumer_secret");
@@ -37,7 +37,7 @@ You have to redirect to the authorization page and provide a callback URL.
 4. Request some information  
 In order to do that I've implemented an method called `makeAPIRequest($url, array $params = NULL, OAuthToken $aToken = NULL)` The first param is the URL (to access the base url you can use the property `api_base`) the second is an array of parameters - it can be `NULL`. The last parameter is the OAuthToken. If you use a single instance (in which case the token is stored inside the object) you can leave this blank, otherwise you to provide the object which was returned by `access_token()`.   
 The method `makeAPIRequest` returns unparsed JSON - you can do what ever you want to.  
-It's planned to encapsulate everything in special methods like `getCurrentUser`.
+It's planned to encapsulate everything in special methods like `getFavorites`.
 
 ##Feedback
 If you want to get in touch with me, visit my blog at [http://blog.kanedo.net](http://blog.kanedo.net). I would like to hear from you. Especially if you find a bug or something like that!
