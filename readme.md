@@ -25,11 +25,13 @@ You have to redirect to the authorization page and provide a callback URL.
 2. Request a token
 
 	$result = $api->request_token($_REQUEST['oauth_verifier'], $_REQUEST['oauth_token'], $_REQUEST['oauth_callback_confirmed']);  
+
 	Readability will send three parameters when redirecting back to your callback url - we need this params
 
 3. Access token
 	
 	$token = $api->access_token($result);  
+
 	This method returns an OAuthToken object. You can either store it or, if you only use this single instance, you can just forget it ;-)
 
 4. Request some information  
