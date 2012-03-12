@@ -32,6 +32,8 @@ class Kanedo_Readability {
 	private $e_request = "https://www.readability.com/api/rest/v1/oauth/request_token/";
 	private $e_access = "https://www.readability.com/api/rest/v1/oauth/access_token/";
 	
+	private $api_base = "https://www.readability.com/api/rest/v1/";
+	
 	
 	public function __construct($consumer_key, $consumer_secret) {
 		$this->c_key = $consumer_key;
@@ -61,6 +63,18 @@ class Kanedo_Readability {
 		if($status['http_code'] != 200){
 			throw new Kanedo_Readability_Exception("Bad Request({$url}): {$result}", $status['http_code']);
 		}
+		return $result;
+	}
+	
+	public function makeAPIRequest($url, array $params = NULL, OAuthToken $aToken = NULL){
+		if($aToken == NULL && $this->access_token == NULL){
+			throw new Kanedo_Readability_Exception('access token required');
+		}
+		$token = ($aToken == NULL)?$this->access_token:$aToken;
+		
+		$req = OAuthRequest::from_consumer_and_token($this->oauth_consumer, $token, "GET",$url, $params);
+		$req->sign_request(new OAuthSignatureMethod_HMAC_SHA1(), $this->oauth_consumer, $token);
+		$result = $this->makeHTTPRequest($req->to_url());
 		return $result;
 	}
 	
@@ -117,6 +131,25 @@ class Kanedo_Readability {
 		}
 		$token_credencials = ($this->parseUrlQuery($result));
 		return $this->access_token = new OAuthToken($token_credencials['oauth_token'], $token_credencials['oauth_token_secret']);
+	}
+	
+	public function getCurrentUser(OAuthToken $aToken = NULL) {
+		if($aToken == NULL && $this->access_token == NULL){
+			throw new Kanedo_Readability_Exception('access token required');
+		}
+		$token = ($aToken == NULL)?$this->access_token:$aToken;
+		$url = $this->api_base."users/_current";
+		var_dump($this->makeAPIRequest($url, NULL, $token));
+	}
+	
+	public function getBookmarks(OAuthToken $aToken = NULL){
+	var_dump($aToken);
+		if($aToken == NULL && $this->access_token == NULL){
+			throw new Kanedo_Readability_Exception('access token required');
+		}
+		$token = ($aToken == NULL)?$this->access_token:$aToken;
+		$url = $this->api_base."bookmarks";
+		var_dump($this->makeAPIRequest($url, NULL, $token));
 	}
 }
 ?>
