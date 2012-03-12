@@ -20,7 +20,7 @@ To use the lib you first have to **authorize** yourself with readability. In ord
 1. The authorization (The user give permission)
 You have to redirect to the authorization page and provide a callback URL.
 	
-	$api->authorize("http://example.org/callback");
+		$api->authorize("http://example.org/callback");
 
 2. Request a token
 
@@ -30,7 +30,7 @@ You have to redirect to the authorization page and provide a callback URL.
 
 3. Access token
 	
-	$token = $api->access_token($result);  
+		$token = $api->access_token($result);  
 
 	This method returns an OAuthToken object. You can either store it or, if you only use this single instance, you can just forget it ;-)
 
