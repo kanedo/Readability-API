@@ -24,7 +24,7 @@ You have to redirect to the authorization page and provide a callback URL.
 
 2. Request a token
 
-	$result = $api->request_token($_REQUEST['oauth_verifier'], $_REQUEST['oauth_token'], $_REQUEST['oauth_callback_confirmed']);  
+		$result = $api->request_token($_REQUEST['oauth_verifier'], $_REQUEST['oauth_token'], $_REQUEST['oauth_callback_confirmed']);  
 
 	Readability will send three parameters when redirecting back to your callback url - we need this params
 
