@@ -39,5 +39,17 @@ In order to do that I've implemented an method called `makeAPIRequest($url, arra
 The method `makeAPIRequest` returns unparsed JSON - you can do what ever you want to.  
 It's planned to encapsulate everything in special methods like `getFavorites`.
 
+##Method documentation
+In this section you can learn how to use special methods
+###getFavorites
+Retrieves favorited bookmarks in an optional given timeframe
+####Parameter
+* $start *timestamp* begin of the timeframe (optional)
+* $end *timestamp* end of the timeframe (optional)
+* $aToken *OAuthToken* the acces token  (optional)
+
+####Return value
+* *array* Returns an array of objects. For details see [Readability API Documentation](http://www.readability.com/publishers/api/#https://www.readability.com/api/rest/v1#bookmarksRepresentation)
+
 ##Feedback
 If you want to get in touch with me, visit my blog at [http://blog.kanedo.net](http://blog.kanedo.net). I would like to hear from you. Especially if you find a bug or something like that!
