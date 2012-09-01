@@ -16,7 +16,8 @@
 	  public function __construct($msq = "", $code = 0){
 		  $msq = $msq;
 		  if($msq instanceof CurlResponse){
-			  $msg = $msq;
+		  	  $code = $msq->headers['Status-Code'];
+			  $msg = $msq->body;
 		  }
 		  
 		  parent::__construct($msg, $code);
@@ -73,7 +74,7 @@ class Kanedo_Readability {
 				$result = $curl->post($url, $param);
 				break;
 		}
-		//var_dump($result);
+
 		if(!($result->headers['Status-Code'] == 202 || $result->headers['Status-Code'] == 200)){
 			throw new Kanedo_Readability_Exception($result);
 		}
@@ -147,15 +148,35 @@ class Kanedo_Readability {
 		return $this->access_token = new OAuthToken($token_credencials['oauth_token'], $token_credencials['oauth_token_secret']);
 	}
 	
+	/** 
+	 * Retrieves information about the current logged in user
+	 * @author Gabriel Bretschner
+	 * @package Readability API
+	 * @since 4301344192
+	 **/
 	public function getCurrentUser(OAuthToken $aToken = NULL) {
 		if($aToken == NULL && $this->access_token == NULL){
 			throw new Kanedo_Readability_Exception('access token required');
 		}
 		$token = ($aToken == NULL)?$this->access_token:$aToken;
 		$url = $this->api_base."users/_current";
-		var_dump($this->makeAPIRequest($url, NULL, $token));
+		$result = $this->makeAPIRequest($url, NULL, $token);
+		$result = json_decode($result->body);
+		if($result == NULL){
+			throw new Kanedo_Readability_Exception("bad json");
+		}
+		
+		return $result;
 	}
 	
+	/** 
+	 * Retrieves all Bookmarks available
+	 *
+	 * @param OAuthToken $aToken the optional token
+	 * @author Gabriel Bretschner
+	 * @package Readability API
+	 * @since 4301344192
+	 **/
 	public function getBookmarks(OAuthToken $aToken = NULL){
 		if($aToken == NULL && $this->access_token == NULL){
 			throw new Kanedo_Readability_Exception('access token required');
@@ -199,28 +220,38 @@ class Kanedo_Readability {
 		return $json->bookmarks;
 	}
 	
-	public function addBookmark($url, $fav=0,  OAuthToken $aToken = NULL){
+	/** 
+	 * Adds a bookmark to reading list
+	 * @author Gabriel Bretschner
+	 * @package Readability API
+	 * @since 4301344192
+	 **/
+	
+	public function addBookmark($url, $fav=0, $archive = 0, OAuthToken $aToken = NULL){
 		if($aToken == NULL && $this->access_token == NULL){
 			throw new Kanedo_Readability_Exception('access token required');
 		}
 		$token = ($aToken == NULL)?$this->access_token:$aToken;
+
 		$aurl = $this->api_base."bookmarks";
+
 		$params = array(
 					'url' => $url,
 					'favorite' => $fav,
-					'archive' => 0,
+					'archive' => $archive,
 				); /**/
+
 		try{
 			$result = $this->makeAPIRequest($aurl, $params, $token, 'POST');
-		}catch(Exception $e){
-			echo "<pre>";
-			var_dump($e);
-			echo "</pre>";
-			return;
+			$result = json_decode($result->body);
+		}catch(Kanedo_Readability_Exception $e){
+			if($e->getCode() != 409){
+				error_log($e->getMessage());
+				return false;
+			}
+			$result = json_decode($e->getMessage()); 
 		} 
-		echo "<pre>";
-		var_dump($result);
-		echo "</pre>";
+		return $result;
 	}
 }
 

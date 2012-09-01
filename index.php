@@ -11,5 +11,5 @@ $token = $api->access_token($result);
 
 $api->addBookmark("http://blog.kanedo.net/1129,custom-post-type-mit-passwort-versehen.html", 0);
 echo "<pre>";
-var_dump($api->getBookmarks());
+var_dump($api->getCurrentUser());
 echo "</pre>";
