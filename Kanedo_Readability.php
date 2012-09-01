@@ -7,11 +7,21 @@
  **/
  
  require('OAuth.php');
+ require('curl.php');
  
  /**
   * Kanedo_Readability_Exception
   **/
-  class Kanedo_Readability_Exception extends Exception {}
+  class Kanedo_Readability_Exception extends Exception {
+	  public function __construct($msq = "", $code = 0){
+		  $msq = $msq;
+		  if($msq instanceof CurlResponse){
+			  $msg = $msq;
+		  }
+		  
+		  parent::__construct($msg, $code);
+	  }
+  }
 /**
  * The Wrapper Class Kanedo_Readability
  * This class encapsulate all important API features
@@ -53,28 +63,32 @@ class Kanedo_Readability {
 		return $parsed_result;
 	}
 	
-	protected function makeHTTPRequest($url){
-		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, $url);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		$result = curl_exec($ch);
-		$status = curl_getinfo($ch);
-		curl_close($ch); 
-		if($status['http_code'] != 200){
-			throw new Kanedo_Readability_Exception("Bad Request({$url}): {$result}", $status['http_code']);
+	protected function makeHTTPRequest($url, $param = array(), $method="GET"){
+		$curl = new Curl();
+		switch($method){
+			case "GET":
+				$result = $curl->get($url, $param);
+				break;
+			case "POST":
+				$result = $curl->post($url, $param);
+				break;
+		}
+		//var_dump($result);
+		if(!($result->headers['Status-Code'] == 202 || $result->headers['Status-Code'] == 200)){
+			throw new Kanedo_Readability_Exception($result);
 		}
 		return $result;
 	}
 	
-	public function makeAPIRequest($url, array $params = NULL, OAuthToken $aToken = NULL){
+	public function makeAPIRequest($url, array $params = NULL, OAuthToken $aToken = NULL, $method="GET"){
 		if($aToken == NULL && $this->access_token == NULL){
 			throw new Kanedo_Readability_Exception('access token required');
 		}
 		$token = ($aToken == NULL)?$this->access_token:$aToken;
 		
-		$req = OAuthRequest::from_consumer_and_token($this->oauth_consumer, $token, "GET",$url, $params);
+		$req = OAuthRequest::from_consumer_and_token($this->oauth_consumer, $token, $method, $url, $params);
 		$req->sign_request(new OAuthSignatureMethod_HMAC_SHA1(), $this->oauth_consumer, $token);
-		$result = $this->makeHTTPRequest($req->to_url());
+		$result = $this->makeHTTPRequest($req->to_url(),$params, $method);
 		return $result;
 	}
 	
@@ -96,7 +110,7 @@ class Kanedo_Readability {
 											'oauth_callback_confirmed' => $oauth_callback_confirmed,
 												));
 		$req->sign_request(new OAuthSignatureMethod_HMAC_SHA1(), $this->oauth_consumer, NULL);
-		$result = $this->makeHTTPRequest($req->to_url());
+		$result = $this->makeHTTPRequest($req->to_url(), 'GET');
 		return ($this->parseUrlQuery($result));
 	}
 	
@@ -148,7 +162,8 @@ class Kanedo_Readability {
 		}
 		$token = ($aToken == NULL)?$this->access_token:$aToken;
 		$url = $this->api_base."bookmarks";
-		var_dump($this->makeAPIRequest($url, NULL, $token));
+		$result = $this->makeAPIRequest($url, NULL, $token);
+		return json_decode($result->body);
 	}
 	
 	/**
@@ -183,5 +198,31 @@ class Kanedo_Readability {
 		}
 		return $json->bookmarks;
 	}
+	
+	public function addBookmark($url, $fav=0,  OAuthToken $aToken = NULL){
+		if($aToken == NULL && $this->access_token == NULL){
+			throw new Kanedo_Readability_Exception('access token required');
+		}
+		$token = ($aToken == NULL)?$this->access_token:$aToken;
+		$aurl = $this->api_base."bookmarks";
+		$params = array(
+					'url' => $url,
+					'favorite' => $fav,
+					'archive' => 0,
+				); /**/
+		try{
+			$result = $this->makeAPIRequest($aurl, $params, $token, 'POST');
+		}catch(Exception $e){
+			echo "<pre>";
+			var_dump($e);
+			echo "</pre>";
+			return;
+		} 
+		echo "<pre>";
+		var_dump($result);
+		echo "</pre>";
+	}
 }
+
+
 ?>
