@@ -13,14 +13,42 @@
   * Kanedo_Readability_Exception
   **/
   class Kanedo_Readability_Exception extends Exception {
+  		protected $body;
 	  public function __construct($msq = "", $code = 0){
 		  $msq = $msq;
 		  if($msq instanceof CurlResponse){
 		  	  $code = $msq->headers['Status-Code'];
-			  $msg = $msq->body;
+		  	  $pre = "Error: ";
+		  	  switch($code){
+			  	  case 401:
+			  	  	$pre = "Authorization Required";
+			  	  	break;
+			  	  case 404:
+			  	  	$pre = "Not Found";
+			  	  	break;
+			  	  case 500:
+			  	  	$pre = "Internal Server Error";
+			  	  	break;
+			  	  case 400:
+			  	  	$pre = "Bad Request";
+			  	  	break;
+			  	  case 409:
+			  	  	$pre = "Conflict";
+			  	  	break;
+			  	  case 403:
+			  	  	$pre = "Forbidden";
+			  	  	break;
+		  	  }
+			  $this->body = json_decode($msq->body);
+			  
+			  $msg = $pre.": ".print_r($this->body ,true);
 		  }
 		  
 		  parent::__construct($msg, $code);
+	  }
+	  
+	  public function getBody(){
+		  return $this->body;
 	  }
   }
 /**
@@ -64,6 +92,14 @@ class Kanedo_Readability {
 		return $parsed_result;
 	}
 	
+	/** 
+	 * This method makes an HTTP Request with help of the curl wrapper
+	 * It throws an exception if the status code is not 200 or 202
+	 * @see https://github.com/shuber/curl
+	 * @author Gabriel Bretschner
+	 * @package Readability API
+	 * @since 4301344192
+	 **/
 	protected function makeHTTPRequest($url, $param = array(), $method="GET"){
 		$curl = new Curl();
 		switch($method){
@@ -80,7 +116,15 @@ class Kanedo_Readability {
 		}
 		return $result;
 	}
-	
+	/** 
+	 * Make an API Request
+	 * This method takes an url with parameters and signs it.
+	 * It makes an HTTP Request and returns the result without interpreting it.
+	 *
+	 * @author Gabriel Bretschner
+	 * @package Readability API
+	 * @since 4301344192
+	 **/
 	public function makeAPIRequest($url, array $params = NULL, OAuthToken $aToken = NULL, $method="GET"){
 		if($aToken == NULL && $this->access_token == NULL){
 			throw new Kanedo_Readability_Exception('access token required');
@@ -249,7 +293,7 @@ class Kanedo_Readability {
 				error_log($e->getMessage());
 				return false;
 			}
-			$result = json_decode($e->getMessage()); 
+			$result = $e->getMessage(); 
 		} 
 		return $result;
 	}

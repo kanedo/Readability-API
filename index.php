@@ -9,7 +9,7 @@ echo "<a href='{$api->authorize("http://readability.work")}'>authorize</a>";
 $result = $api->request_token($_REQUEST['oauth_verifier'], $_REQUEST['oauth_token'], $_REQUEST['oauth_callback_confirmed']); 
 $token = $api->access_token($result);
 
-$api->addBookmark("http://blog.kanedo.net/1129,custom-post-type-mit-passwort-versehen.html", 0);
 echo "<pre>";
-var_dump($api->getCurrentUser());
+var_dump($api->addBookmark("http://blog.kanedo.net/1129,custom-post-type-mit-passwort-versehen.html", 0));
+//var_dump($api->getFavorites());
 echo "</pre>";
