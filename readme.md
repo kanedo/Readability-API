@@ -3,6 +3,7 @@ This is an API wrapper of the [Readability API](http://www.readability.com/publi
 
 ##external Libraries
 This wrapper uses the [OAuth Library](http://code.google.com/p/oauth-php/) which is under the MIT License.
+It also uses the [curl wrapper](https://github.com/shuber/curl) which is also under MIT License.
 
 ##Requirements
 ###Readability API Key
