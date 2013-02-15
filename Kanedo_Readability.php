@@ -1,6 +1,6 @@
 <?php
 /**
- * A API Wrapper for the Readability API
+ * A API Wrapper for the Readability API TEST
  * @see http://www.readability.com/publishers/api
  * @author Gabriel Bretschner <info@kanedo.net>
  * @package Kanedo_Readability
