@@ -147,17 +147,31 @@ class Kanedo_Readability {
 	 * @return string The authorization URL
 	 **/
 	public function authorize($callback){
-		$req = OAuthRequest::from_consumer_and_token($this->oauth_consumer, NULL, "GET",$this->e_authorize, array("oauth_callback" => $callback));
+		$req = OAuthRequest::from_consumer_and_token(
+			$this->oauth_consumer, 
+			NULL, 
+			"GET",
+			$this->e_authorize, 
+			array(
+				"oauth_callback" => $callback
+			)
+		);
 		$req->sign_request(new OAuthSignatureMethod_HMAC_SHA1(), $this->oauth_consumer, NULL);
 		return $req->to_url();
 	}
 	
 	public function request_token($oauth_verifier, $oauth_token, $oauth_callback_confirmed) {
-		$req = OAuthRequest::from_consumer_and_token($this->oauth_consumer, NULL, "GET",$this->e_request, array(
-											'oauth_verifier' => $oauth_verifier,
-											'oauth_token' => $oauth_token,
-											'oauth_callback_confirmed' => $oauth_callback_confirmed,
-												));
+		$req = OAuthRequest::from_consumer_and_token(
+			$this->oauth_consumer, 
+			NULL, 
+			"GET",
+			$this->e_request, 
+			array(
+				'oauth_verifier' => $oauth_verifier,
+				'oauth_token' => $oauth_token,
+				'oauth_callback_confirmed' => $oauth_callback_confirmed,
+			)
+		);
 		$req->sign_request(new OAuthSignatureMethod_HMAC_SHA1(), $this->oauth_consumer, NULL);
 		$result = $this->makeHTTPRequest($req->to_url(), 'GET');
 		return ($this->parseUrlQuery($result));
