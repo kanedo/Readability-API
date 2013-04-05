@@ -13,7 +13,8 @@
   * Kanedo_Readability_Exception
   **/
   class Kanedo_Readability_Exception extends Exception {
-  		protected $body;
+  	  protected $body;
+	  protected $headers; 
 	  public function __construct($msq = "", $code = 0){
 		  $msq = $msq;
 		  if($msq instanceof CurlResponse){
@@ -40,8 +41,8 @@
 			  	  	break;
 		  	  }
 			  $this->body = json_decode($msq->body);
-			  
-			  $msg = $pre.": ".print_r($this->body ,true);
+			  $this->headers = $msq->headers;
+			  $msg = $pre.": ".print_r($this->body ,true)." HEADERS: ".print_r($this->headers, true);
 		  }
 		  
 		  parent::__construct($msg, $code);
@@ -49,6 +50,10 @@
 	  
 	  public function getBody(){
 		  return $this->body;
+	  }
+	  
+	  public function getHeaders(){
+		  return $this->headers;
 	  }
   }
 /**
@@ -110,7 +115,6 @@ class Kanedo_Readability {
 				$result = $curl->post($url, $param);
 				break;
 		}
-
 		if(!($result->headers['Status-Code'] == 202 || $result->headers['Status-Code'] == 200)){
 			throw new Kanedo_Readability_Exception($result);
 		}
@@ -287,7 +291,9 @@ class Kanedo_Readability {
 
 		try{
 			$result = $this->makeAPIRequest($aurl, $params, $token, 'POST');
-			$result = json_decode($result->body);
+			if($result->headers['Status-Code'] == 202){
+				return true;
+			}
 		}catch(Kanedo_Readability_Exception $e){
 			if($e->getCode() != 409){
 				error_log($e->getMessage());
