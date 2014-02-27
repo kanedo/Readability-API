@@ -42,7 +42,12 @@ class Bookmark{
 	}
 
 	public function getDateAdded($format){
-		return "";
+		switch ($format) {
+			case 'value':
+				return strtotime("");
+			default:
+				return "";
+		}
 	}
 
 	/**
