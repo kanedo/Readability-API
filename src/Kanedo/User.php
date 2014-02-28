@@ -11,6 +11,12 @@ class User {
 			$this->setUp($json);
 		}
 	}
+
+	public static function byId($id){
+		$json = NULL;
+		return new User($json);
+	}
+
 	public function setUp($json){
 		$parsed = json_decode($json);
 		if($parsed != NULL){
