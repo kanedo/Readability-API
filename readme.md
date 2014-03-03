@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/kanedo/Readability-API.png?branch=master)](https://travis-ci.org/kanedo/Readability-API)
 #Readability API
 This is an API wrapper of the [Readability API](http://www.readability.com/publishers/api/) to use in PHP.
 
