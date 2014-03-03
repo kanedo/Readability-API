@@ -19,6 +19,8 @@ class Bookmark{
 		$this->request = $request;
 	}
 
+
+
 	/**
 	 * Setup the Bookmark
 	 * @param string $json The JSON representation of the bookmark retrieved from the api
@@ -27,16 +29,26 @@ class Bookmark{
 	public function setUp($json){
 		$parsed = json_decode($json);
 		if($parsed != NULL){
-			$this->setId($parsed->id);
-			$this->setExcerpt($parsed->article->excerpt);
-			$this->setAuthor($parsed->article->author);
-			$this->setTitle($parsed->article->title);
-			$this->setDomain($parsed->article->domain);
-			$this->setUrl($parsed->article->url);
-			$this->setFavorited($parsed->favorite);
-			$this->setUser($parsed->user_id);
-			$this->setDateAdded($parsed->date_added);
-			if(is_array($parsed->tags)){
+			if(isset($parsed->id)){
+				$this->setId($parsed->id);
+			}
+			if(isset($parsed->article)){
+				$this->setExcerpt($parsed->article->excerpt);
+				$this->setAuthor($parsed->article->author);
+				$this->setTitle($parsed->article->title);
+				$this->setDomain($parsed->article->domain);
+				$this->setUrl($parsed->article->url);
+			}
+			if(isset($parsed->favorite)){
+				$this->setFavorited($parsed->favorite);
+			}
+			if(isset($parsed->user_id)){
+				$this->setUser($parsed->user_id);
+			}
+			if(isset($parsed->date_added)){
+				$this->setDateAdded($parsed->date_added);
+			}
+			if(isset($parsed->tags) && is_array($parsed->tags)){
 				foreach ($parsed->tags as $tag) {
 					$this->addTag($tag);
 				}
