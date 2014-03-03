@@ -12,8 +12,12 @@ class Bookmark{
 	private $date_added;
 	private $tags = array();
 
+	private $request;
 
-	public function __construct(){}
+
+	public function __construct(Request $request ){
+		$this->request = $request;
+	}
 
 	/**
 	 * Setup the Bookmark

@@ -4,7 +4,10 @@ class BookmarkTest extends \PHPUnit_Framework_Testcase {
 	private $testee;
 	public function setUp(){
 		date_default_timezone_set("Europe/Berlin");
-		$this->testee = new Bookmark();
+		$request = $this->getMockBuilder('\\Kanedo\\Request')->disableOriginalConstructor()->getMock();
+
+
+		$this->testee = new Bookmark($request);
 		$bookmark = '{
     "user_id": 1,
     "read_percent": "0.13",
@@ -40,7 +43,9 @@ class BookmarkTest extends \PHPUnit_Framework_Testcase {
 	 * @expectedException \Exception
 	 */
 	public function testMisformatedJSON(){
-		$testee = new Bookmark();
+		$request = $this->getMockBuilder('\\Kanedo\\Request')->disableOriginalConstructor()->getMock();
+
+		$testee = new Bookmark($request);		
 		$json = "{this is wroooong: lols'}";
 		$testee->setUp($json);
 	}
